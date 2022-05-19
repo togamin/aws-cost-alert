@@ -1,12 +1,16 @@
 service: aws-cost-alert
 frameworkVersion: "3"
 
+custom:
+  otherfile:
+    conf: ${file(./conf.yml)}
+
 provider:
   name: aws
   region: ap-northeast-1
   runtime: python3.7
   environment:
-    SLACK_WEBHOOK_URL: ${${file(./conf.yml)}.path}
+    SLACK_WEBHOOK_URL: ${self:custom.otherfile.conf.SLACK_WEBHOOK_URL}
 
 plugins:
   - serverless-python-requirements
