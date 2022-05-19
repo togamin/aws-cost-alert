@@ -1,0 +1,19 @@
+service: aws-cost-alert
+frameworkVersion: "3"
+
+provider:
+  name: aws
+  region: ap-northeast-1
+  runtime: python3.7
+  environment:
+    SLACK_WEBHOOK_URL: https://hooks.slack.com/services/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
+
+plugins:
+  - serverless-python-requirements
+
+functions:
+  PostSlackFunctions:
+    handler: handler.post_slack
+    events:
+      - eventBridge:
+        schedule: rate(3 minutes)
