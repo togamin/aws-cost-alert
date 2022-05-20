@@ -2,9 +2,11 @@ import os
 import json
 import requests
 
+#環境変数からSlackに通知するためのURLを取得
 SLACK_WEBHOOK_URL = os.environ['SLACK_WEBHOOK_URL']
 
 def post_slack(event, context) -> None:
+    #通知内容の設定
     payload = {
         'attachments': [
             {
@@ -14,7 +16,7 @@ def post_slack(event, context) -> None:
             }
         ]
     }
-    # http://requests-docs-ja.readthedocs.io/en/latest/user/quickstart/
+    # Slackへのリクエストの作成と通知
     try:
         response = requests.post(SLACK_WEBHOOK_URL, data=json.dumps(payload))
     except requests.exceptions.RequestException as e:
