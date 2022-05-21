@@ -1,0 +1,49 @@
+service: aws-cost-alert
+frameworkVersion: "3"
+
+custom:
+  otherfile:
+    conf: ${file(./conf.yml)}
+
+provider:
+  name: aws
+  region: ap-northeast-1
+  runtime: python3.7
+  environment:
+    SLACK_WEBHOOK_URL: ${self:custom.otherfile.conf.SLACK_WEBHOOK_URL}
+
+plugins:
+  - serverless-python-requirements
+
+functions:
+  PostSlackFunctions:
+    handler: handler.post_slack
+    role: !GetAtt BillingIamRole.Arn
+    events:
+      - eventBridge:
+          schedule: cron(00 23 ? * SAT *)
+
+resources:
+  Resources:
+    BillingIamRole:
+      Type: AWS::IAM::Role
+      Properties:
+        AssumeRolePolicyDocument:
+          Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Principal:
+                Service: lambda.amazonaws.com
+              Action: "sts:AssumeRole"
+        Policies:
+          - PolicyName: "NotifySlackToBillingLambdaPolicy"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "logs:CreateLogGroup"
+                    - "logs:CreateLogStream"
+                    - "logs:PutLogEvents"
+                    - "ce:GetCostAndUsage"
+                  Resource: "*"
