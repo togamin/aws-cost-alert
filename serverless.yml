@@ -17,7 +17,7 @@ plugins:
 
 functions:
   PostSlackFunctions:
-    handler: handler.post_slack
+    handler: handler.handler
     role: !GetAtt BillingIamRole.Arn
     events:
       - eventBridge:
